@@ -4,14 +4,14 @@ maven 'Maven3'
 }
 agent any
 environment {
-registry = "261991889257.dkr.ecr.us-east-1.amazonaws.com/demo"
+registry = "919147823021.dkr.ecr.eu-north-1.amazonaws.com/project"
 }
 stages {
 stage('Cloning Git') {
 steps {
-checkout([$class: 'GitSCM', branches: [[name: '*/main']],
+checkout([$class: 'GitSCM', branches: [[name: '*/master']],
 doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [],
-userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/yasminjeelani/EKS-CICD.git']]])
+userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/Kani2b/project.git']]])
 }
 }
 stage ('Build') {
@@ -32,8 +32,8 @@ dockerImage = docker.build registry
 stage('Pushing to ECR') {
 steps{
 script {
-sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 261991889257.dkr.ecr.us-east-1.amazonaws.com'
-sh 'docker push 261991889257.dkr.ecr.us-east-1.amazonaws.com/demo:latest'
+sh 'aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 919147823021.dkr.ecr.eu-north-1.amazonaws.com'
+sh 'docker push 919147823021.dkr.ecr.eu-north-1.amazonaws.com/project:latest'
 }
 }
 }
@@ -42,6 +42,7 @@ steps{
 script {
 withKubeConfig([credentialsId: 'K8S', serverUrl: '']) {
 sh ('kubectl apply -f eks-deploy-k8s.yaml')
+sh ('kubectl apply -f statefulset.yaml')
 }
 }
 }
